@@ -566,6 +566,8 @@ pub struct Settings {
     pub update_grace: Option<crate::updater::GraceStart>,
     pub area_search: area_search::AreaSearch,
     pub crash_reports: CrashReports,
+    /// Discord Rich Presence (Preferences › Privacy › Discord, `discord/`).
+    pub discord: crate::discord::Settings,
     /// Firestorm Language: default follows the OS.
     pub language: String,
     /// Firestorm LanguageIsPublic, exposed through llGetAgentLanguage.
@@ -2240,6 +2242,7 @@ impl Default for Settings {
             update_grace: None,
             area_search: Default::default(),
             crash_reports: CrashReports::Ask,
+            discord: Default::default(),
             language: "default".into(),
             language_is_public: true,
             browser_home_page: crate::ui::web_browser::DEFAULT_HOME.into(),
@@ -3149,6 +3152,7 @@ impl Settings {
             );
         }
         self.lookat = self.lookat.sanitized();
+        self.discord = std::mem::take(&mut self.discord).sanitized();
         if let Some(seconds) = self.former_group_snooze_seconds.take() {
             // rounded up: a short snooze stays a snooze, not "until the next message"
             self.group_snooze_minutes = seconds.div_ceil(60);

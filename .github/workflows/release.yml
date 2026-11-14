@@ -43,6 +43,13 @@ concurrency:
 permissions:
   contents: read
 
+# The Discord application of the published viewer's Rich Presence card
+# (docs/DISCORD.md): a repository variable, not a secret (an application id
+# is public). Unset: the build has none, and Preferences › Privacy › Discord
+# asks for one.
+env:
+  AURORA_DISCORD_APP_ID: ${{ vars.AURORA_DISCORD_APP_ID }}
+
 jobs:
   windows:
     runs-on: windows-latest

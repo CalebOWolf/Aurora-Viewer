@@ -6148,6 +6148,7 @@ before (`amis`, `groupes`, `repere`, `historique`…) are still accepted.
 | `AURORA_DEMO_MATURITY=agree\|disagree\|fail` | Content rating changed, the server's answer |
 | `AURORA_DEMO_HOME=<outcome>[:set]` | World › Set Home to Here and the region's answer |
 | `AURORA_DEMO_USERINFO=hidden\|liaison\|opensim\|fail\|savefail` | Preferences › Privacy › Visibility, the account settings the grid keeps |
+| `AURORA_DEMO_DISCORD=1` | Discord Rich Presence on for the run, without saving it |
 | `AURORA_DEMO_SLURLS=1\|offer` | Place links with their region rating badges, one region looked up |
 | `AURORA_DEMO_APPLINKS=1\|actions\|preview\|<command>[:restore]` | URI examples, visible action markers, their previews or a minimize/reopen scenario |
 | `AURORA_DEMO_EXPERIENCE=1\|auto\|profile\|blocked\|walk\|arrive\|edit\|scenes` | Experiences asking: a door to click, a pad to walk into, a parcel greeter on arrival; `scenes`: an experience's environment pushes, then its clear; also fills Me › Experiences; `edit` opens the club experience's Edit tab |
@@ -8892,6 +8893,16 @@ Human grid validation: remember MFA for account A and B, restart the viewer, the
   the account's page; `fail`: the settings never come, the switches stay
   greyed; `savefail`: a change is refused, a notice says so and the
   switches go back to what the grid has.
+- **`AURORA_DEMO_DISCORD=1`**: Preferences › Privacy › Discord's "Show my
+  activity on Discord" on for the run, whatever the saved setting, which it
+  leaves alone. With the Discord desktop app running on the same computer,
+  the profile shows "Playing <application>" with the demo's plaza (a
+  General region) and its coordinates, the elapsed time since the world
+  appeared, and the Connection line of the page says "Connected to Discord
+  as …". Without Discord, the line says it is not running and the log shows
+  nothing more than one try every 15 seconds. The build needs an
+  application id (`AURORA_DISCORD_APP_ID` at build time, or the page's
+  field): [docs/DISCORD.md](DISCORD.md).
 - **`AURORA_DEMO_EXPERIENCE=1|auto|profile|blocked|walk|arrive|edit|scenes`**: experiences
   asking for permissions; the demo plays the simulator, GetExperienceInfo and
   ExperiencePreferences. In SL a script may ask from any event (a click, a

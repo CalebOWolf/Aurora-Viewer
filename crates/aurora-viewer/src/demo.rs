@@ -1025,6 +1025,14 @@ pub fn many_conversation(i: u32) -> Uuid {
     Uuid::from_u128(0xA0E0_A6E1_0000_0000_0000_0001_0000_0000 | i as u128)
 }
 
+/// AURORA_DEMO_DISCORD=1: Discord Rich Presence on for the run, without
+/// saving it (`app/discord.rs`): the demo's plaza shows on the Discord
+/// profile of a computer where Discord runs.
+pub fn discord_on() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var("AURORA_DEMO_DISCORD").is_ok_and(|v| v == "1"))
+}
+
 pub fn many_conversations_scenario() -> bool {
     std::env::var("AURORA_DEMO_CONV").is_ok_and(|v| v == "many")
 }

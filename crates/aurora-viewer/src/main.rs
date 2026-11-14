@@ -37,6 +37,7 @@ mod demo;
 mod destination_guide;
 mod dev_toolbox;
 mod director;
+mod discord;
 mod disk_io;
 mod dof;
 mod external_url;

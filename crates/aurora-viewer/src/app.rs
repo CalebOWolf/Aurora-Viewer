@@ -91,6 +91,7 @@ mod parcel_music;
 pub(crate) use gpu_stall::withdraw_all as withdraw_gpu_notices;
 mod avatar_align;
 mod debug_settings;
+mod discord;
 mod draw_stepping;
 mod graphics_start;
 mod grid_status;
@@ -924,6 +925,10 @@ pub struct App {
     /// its button stands on a toolbar, and whether the window was open
     /// last frame.
     grid_status: crate::grid_status::GridStatus,
+    /// Discord Rich Presence (`app/discord.rs`) and the start of the
+    /// session it shows.
+    discord: crate::discord::Presence,
+    discord_since: Option<u64>,
     grid_status_listed: bool,
     grid_status_was_open: bool,
     /// The conversation log's window (`app/conversation_log.rs`).
@@ -2032,6 +2037,8 @@ impl App {
             voice_controls_ui: Default::default(),
             omnifilter_ui: Default::default(),
             grid_status: Default::default(),
+            discord: Default::default(),
+            discord_since: None,
             grid_status_listed: false,
             grid_status_was_open: false,
             conversation_log_ui: Default::default(),
@@ -13363,6 +13370,8 @@ impl App {
         self.frame_start = Instant::now();
         self.frame_count += 1;
         self.note_viewer_stats(paced, &gfx.renderer.info);
+        // on every screen: the login screen clears the card
+        self.discord_presence();
         if self.demo
             && self.frame_count == 1500
             && std::env::var("AURORA_DEMO_INVENTORY").is_ok_and(|v| matches!(v.as_str(), "image-photo" | "image-photo-save"))
@@ -17203,6 +17212,7 @@ impl App {
             show_in_search: self.world.show_in_search(),
             second_life,
         });
+        self.options_ui.discord = self.discord.status();
         self.options_ui.login_favorites = self.login_favorites.key().map(|key| self.login_form.favorites.shown(key));
         self.options_ui.friends_only = (!self.world.agent_id.is_nil()).then_some(self.world.friends_only());
         self.options_ui.friends_only_keep = (!self.world.agent_id.is_nil()).then_some(self.world.friends_only.keep_after_teleport);
