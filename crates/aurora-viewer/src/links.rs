@@ -14,6 +14,8 @@ pub const WIKI: &str = "https://github.com/Aurora-Viewer/Aurora-Viewer/wiki";
 pub const DISCORD: &str = "https://discord.gg/TK4nbMGmKt";
 /// Project website.
 pub const WEBSITE: &str = "https://aurora-viewer.org";
+/// The guide of Discord Rich Presence (docs/DISCORD.md on the wiki).
+pub const DISCORD_GUIDE: &str = "https://github.com/Aurora-Viewer/Aurora-Viewer/wiki/Discord-Rich-Presence";
 /// The privacy policy on the website (Preferences › Privacy › Your data).
 pub const PRIVACY_POLICY: &str = "https://aurora-viewer.org/privacy/";
 /// News feed: this folder of `main`, hand-edited Markdown files, one

@@ -441,6 +441,10 @@ pub struct OptionsUi {
     /// The session's "Show my favorite landmarks at login", while logged in
     /// with an account the login screen remembers (set by the app).
     pub login_favorites: Option<bool>,
+    /// Discord Rich Presence's connection (set by the app), and the region
+    /// name typed to hide (Privacy › Discord).
+    pub discord: crate::discord::Status,
+    pub discord_region_typed: String,
     /// The account's "Show Friends Only", while logged in (set by the app).
     pub friends_only: Option<bool>,
     /// The account's "Keep Show Friends Only after teleporting", while

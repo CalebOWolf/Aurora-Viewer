@@ -259,6 +259,7 @@ pub(super) fn page(cx: &mut Cx) {
             );
         }
     });
+    discord_group(cx);
     // What the crash window does with a report: a public GitHub issue in
     // the tester's name (crash/github.rs), never sent elsewhere.
     cx.group(tr!("ui-options-crash-reports"), |cx| {
@@ -305,6 +306,169 @@ pub(super) fn page(cx: &mut Cx) {
             },
         );
     });
+}
+
+/// Discord Rich Presence (`discord/`): the options of FSFloaterDiscord
+/// (floater_fs_discord.xml) on this page, beside the other things the
+/// viewer tells about us. The connection follows the switch, so the
+/// floater's Connect / Disconnect buttons become a status line.
+fn discord_group(cx: &mut Cx) {
+    use crate::discord::{Shared, Status};
+    use aurora_i18n::tr;
+    let p = cx.p;
+    cx.group(tr!("ui-options-discord"), |cx| {
+        cx.keywords("Discord Rich Presence")
+            .toggle(tr!("ui-options-discord-on"), tr!("ui-options-discord-on-hint"), &field!(discord.on));
+        let off = !cx.s.discord.on;
+        cx.subs(off, |cx| {
+            cx.keywords("Discord").row_with(
+                tr!("ui-options-discord-status"),
+                tr!("ui-options-discord-status-hint"),
+                &Nothing,
+                |ui, s, st, _| {
+                    let text = match &st.discord {
+                        Status::Off if s.discord.on => tr!("ui-options-discord-status-in-world").to_owned(),
+                        Status::Off => tr!("ui-options-discord-status-off").to_owned(),
+                        Status::NoAppId => tr!("ui-options-discord-status-no-app").to_owned(),
+                        Status::NotRunning => tr!("ui-options-discord-status-not-running").to_owned(),
+                        Status::Connecting => tr!("ui-options-discord-status-connecting").to_owned(),
+                        Status::Connected(name) if name.is_empty() => tr!("ui-options-discord-status-connected").to_owned(),
+                        Status::Connected(name) => tr!("ui-options-discord-status-connected-as", name = name.as_str()),
+                        Status::Refused(message) => tr!("ui-options-discord-status-refused", message = message.as_str()),
+                    };
+                    ui.horizontal(|ui| {
+                        ui.label(egui::RichText::new(text).size(12.0).color(p.muted));
+                        let guide = tr!("ui-options-discord-guide");
+                        if widgets::action_button(
+                            ui,
+                            &p,
+                            "help-circle-filled",
+                            guide,
+                            widgets::ActionKind::Flat,
+                            egui::Vec2::new(0.0, 24.0),
+                        )
+                        .clicked()
+                        {
+                            ui.ctx().open_url(egui::OpenUrl::new_tab(crate::links::DISCORD_GUIDE));
+                        }
+                    });
+                    false
+                },
+            );
+            cx.toggle(
+                tr!("ui-options-discord-share-name"),
+                tr!("ui-options-discord-share-name-hint"),
+                &field!(discord.share_name),
+            );
+            cx.keywords("FSMaxSharedMaturity").combo(
+                tr!("ui-options-discord-maturity"),
+                tr!("ui-options-discord-maturity-hint"),
+                &field!(discord.max_maturity),
+                &[
+                    (Shared::Adult, tr!("ui-options-discord-maturity-adult")),
+                    (Shared::Moderate, tr!("ui-options-discord-maturity-moderate")),
+                    (Shared::General, tr!("ui-options-discord-maturity-general")),
+                    (Shared::None, tr!("ui-options-discord-maturity-none")),
+                ],
+            );
+            let listed = cx.s.discord.hidden_regions.join(" ");
+            cx.wide().below().keywords(&listed).row_with(
+                tr!("ui-options-discord-hidden-regions"),
+                tr!("ui-options-discord-hidden-regions-hint"),
+                &field!(discord.hidden_regions),
+                |ui, s, st, _| hidden_regions(ui, &p, &mut s.discord, &mut st.discord_region_typed),
+            );
+            cx.keywords("client id").row(
+                tr!("ui-options-discord-app-id"),
+                tr!("ui-options-discord-app-id-hint"),
+                &field!(discord.app_id),
+                |ui, s| {
+                    let id = s.discord.app_id.trim();
+                    let wrong = !id.is_empty() && !crate::discord::valid_app_id(id);
+                    let built_in = crate::discord::built_in_app_id().is_some();
+                    let hint = if built_in {
+                        tr!("ui-options-discord-app-id-built-in")
+                    } else {
+                        tr!("ui-options-discord-app-id-none")
+                    };
+                    ui.vertical(|ui| {
+                        let changed = ui
+                            .add(
+                                egui::TextEdit::singleline(&mut s.discord.app_id)
+                                    .desired_width(180.0)
+                                    .hint_text(hint),
+                            )
+                            .changed();
+                        if wrong {
+                            ui.label(
+                                egui::RichText::new(tr!("ui-options-discord-app-id-wrong"))
+                                    .size(11.5)
+                                    .color(p.danger),
+                            );
+                        }
+                        changed
+                    })
+                    .inner
+                },
+            );
+        });
+    });
+}
+
+/// The regions never shared (FSFloaterDiscord's blacklisted_names): each
+/// removable, then a field to add one. True on a change.
+fn hidden_regions(ui: &mut egui::Ui, p: &crate::theme::Palette, s: &mut crate::discord::Settings, typed: &mut String) -> bool {
+    use aurora_i18n::tr;
+    let mut changed = false;
+    ui.vertical(|ui| {
+        if s.hidden_regions.is_empty() {
+            ui.label(
+                egui::RichText::new(tr!("ui-options-discord-hidden-regions-none"))
+                    .size(12.0)
+                    .color(p.muted),
+            );
+        }
+        let mut removed = None;
+        for (i, name) in s.hidden_regions.iter().enumerate() {
+            ui.horizontal(|ui| {
+                if widgets::icon_button(ui, p, "trash-filled", tr!("common-remove"), true) {
+                    removed = Some(i);
+                }
+                ui.label(egui::RichText::new(name).size(12.5).color(p.ink));
+            });
+        }
+        if let Some(i) = removed {
+            s.hidden_regions.remove(i);
+            changed = true;
+        }
+        ui.add_space(4.0);
+        ui.horizontal(|ui| {
+            let field = ui.add(
+                egui::TextEdit::singleline(typed)
+                    .desired_width(220.0)
+                    .hint_text(tr!("ui-options-discord-hidden-regions-add-hint")),
+            );
+            let entered = field.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
+            let add = ui
+                .add_enabled_ui(!typed.trim().is_empty(), |ui| {
+                    widgets::action_button(
+                        ui,
+                        p,
+                        "circle-plus-filled",
+                        tr!("common-add"),
+                        widgets::ActionKind::Flat,
+                        egui::Vec2::new(90.0, 26.0),
+                    )
+                })
+                .inner
+                .clicked();
+            if (add || entered) && s.hide_region(typed) {
+                typed.clear();
+                changed = true;
+            }
+        });
+    });
+    changed
 }
 
 #[cfg(test)]
