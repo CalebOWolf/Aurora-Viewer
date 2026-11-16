@@ -361,7 +361,7 @@ EnableAvatarShare,Boolean,unreviewed,,,Enable sharing from web link
 EnableButtonFlashing,Boolean,unreviewed,,,Allow UI to flash buttons to get your attention
 EnableClassifieds,Boolean,unreviewed,,,Enable creation of new classified ads from web link
 EnableCollisionSounds,Boolean,unreviewed,,field `collision_sounds`,Play sounds on collision
-EnableDiscord,Boolean,unreviewed,,,"When set, connect to Discord to enable Rich Presence (UNUSED)"
+EnableDiscord,Boolean,in-aurora,,"field `discord.on` (Preferences › Privacy › Discord, off: the per-account FSEnableDiscordIntegration's default)","When set, connect to Discord to enable Rich Presence (UNUSED)"
 EnableDiskCacheDebugInfo,Boolean,unreviewed,,,"When set, display additional cache debugging information"
 EnableGestureSounds,Boolean,unreviewed,,field `gesture_sounds`,Play sounds from gestures
 EnableGrab,Boolean,unreviewed,,,Use Ctrl+mouse to grab and manipulate objects
@@ -2008,8 +2008,8 @@ ShowConsoleWindow,Boolean,unreviewed,,,Show log in separate OS window
 ShowCrosshairs,Boolean,unreviewed,,field `crosshair`,Display crosshairs when in mouselook mode
 ShowDebugConsole,Boolean,unreviewed,,,Show log in SL window
 ShowDeviceSettings,Boolean,unreviewed,,,Show device settings
-ShowDiscordActivityDetails,Boolean,unreviewed,,,"When set, show avatar name on Discord Rich Presence (UNUSED)"
-ShowDiscordActivityState,Boolean,unreviewed,,,"When set, show location on Discord Rich Presence (UNUSED)"
+ShowDiscordActivityDetails,Boolean,in-aurora,,"field `discord.share_name` (FSShareNameToDiscord, off)","When set, show avatar name on Discord Rich Presence (UNUSED)"
+ShowDiscordActivityState,Boolean,in-aurora,,"field `discord.max_maturity` (FSMaxSharedMaturity, General regions; `None` shares no region)","When set, show location on Discord Rich Presence (UNUSED)"
 ShowEventRecorderMenuItems,Boolean,unreviewed,,,Whether or not Event Recorder menu choices - Start / Stop event recording should appear in the (currently) Develop menu
 ShowGroupNoticesTopRight,Boolean,unreviewed,,,Show group notifications to the top right corner of the screen.
 ShowHelpOnFirstLogin,Boolean,unreviewed,,,Show Help Floater on first login
